@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>Practice MP module</title>
+  <style>
+    html, body {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+    }
+
+    body {
+      display: flex;
+      flex-direction: row;
+    }
+
+    .sidenav {
+      width: 200px;
+      background-color: #111;
+      padding-top: 20px;
+      height: 100%;
+      flex-shrink: 0;
+    }
+
+    .sidenav a {
+      padding: 8px 16px;
+      text-decoration: none;
+      font-size: 25px;
+      color: #ffffff;
+      display: block;
+    }
+
+    .sidenav a:hover {
+      color: #575757;
+    }
+
+    .content {
+      padding: 20px;
+      flex-grow: 1;
+    }
+
+    .pdf-list a {
+      display: block;
+      margin: 10px 0;
+      font-size: 18px;
+      text-decoration: none;
+      color: #0078d7;
+    }
+
+    .pdf-list a:hover {
+      text-decoration: underline;
+    }
+
+    .explainer {
+      margin-bottom: 10px;
+      font-size: 18px;
+      color: #555;
+    }
+
+    .sentence {
+      margin-bottom: 20px;
+      font-size: 20px;
+    }
+
+    input[type="text"] {
+      width: 100px;
+      padding: 5px;
+      text-align: center;
+      font-size: 16px;
+    }
+
+    button {
+      margin: 5px;
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+
+    .counter {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="sidenav">
+    <a href="practicemp.html">Mapping</a>
+    <a href="practicetime.html">Time</a>
+    <a href="mailto:contact@example.com">Contact</a>
+  </div>
+  <div class="content">
+    <h1>Fill in the Blanks</h1>
+    <div id="exercise">
+      <div class="explainer" id="explainer"></div>
+      <div class="sentence" id="sentence"></div>
+      <button id="back">Back</button>
+      <button id="show">Show</button>
+      <button id="check">Check</button>
+      <button id="next">Next</button>
+    </div>
+    <div class="counter" id="counter">Exercise 1 of 3</div>
+  </div>
+
+  <script>
+    const exercises = [
+      { 
+        explainer: "Initialize interpreter with the correct module for using ArcPy.",
+        sentence: "import ___", 
+        answers: ["arcpy"] 
+      },
+      { 
+        explainer: "Create an object that contains an ArcGIS Pro project.",
+        sentence: <pre>p = arcpy.mp.___(r'C:\\Maps\\MyMaps.aprx'),</pre>, 
+        answers: ["ArcGISProject"]
+      },
+      { 
+        explainer: "Retrieve a map in object p with the name Cancun.",
+        sentence: "m = p.___("___, 
+        answers: ["listMaps", "Cancun)[0]"] 
+      },
+      { 
+        explainer: "Retrieve a layer in object m with the name Fishnet.",
+        sentence: <pre>l = m.___('Fishnet')___</pre>, 
+        answers: ["listLayers", "[0]"] 
+      },
+    ];
+
+    let currentIndex = 0;
+
+    function loadExercise(index) {
+      const exercise = exercises[index];
+      
+      // Set explainer text
+      document.getElementById("explainer").textContent = exercise.explainer;
+
+      // Generate sentence with blanks
+      const parts = exercise.sentence.split("___");
+      let html = "";
+
+      for (let i = 0; i < parts.length; i++) {
+        html += parts[i];
+        if (i < exercise.answers.length) {
+          html += `<input type="text" id="blank-${i}" placeholder="____">`;
+        }
+      }
+
+      document.getElementById("sentence").innerHTML = html;
+
+      // Update counter
+      updateCounter();
+    }
+
+    function updateCounter() {
+      document.getElementById("counter").textContent = `Exercise ${currentIndex + 1} of ${exercises.length}`;
+    }
+
+    document.getElementById("show").addEventListener("click", () => {
+      const exercise = exercises[currentIndex];
+      exercise.answers.forEach((answer, i) => {
+        const blankInput = document.getElementById(`blank-${i}`);
+        blankInput.value = answer;
+      });
+    });
+
+    document.getElementById("check").addEventListener("click", () => {
+      const exercise = exercises[currentIndex];
+      exercise.answers.forEach((answer, i) => {
+        const blankInput = document.getElementById(`blank-${i}`);
+        if (blankInput.value === answer) {
+          blankInput.style.color = "green";
+        } else {
+          blankInput.style.color = "red";
+        }
+      });
+    });
+
+    document.getElementById("next").addEventListener("click", () => {
+      currentIndex = (currentIndex + 1) % exercises.length;
+      loadExercise(currentIndex);
+    });
+
+    document.getElementById("back").addEventListener("click", () => {
+      currentIndex = (currentIndex - 1 + exercises.length) % exercises.length;
+      loadExercise(currentIndex);
+    });
+
+    // Initialize the first exercise
+    loadExercise(currentIndex);
+  </script>
+</body>
+
+</html>

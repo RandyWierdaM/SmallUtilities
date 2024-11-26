@@ -1,5 +1,6 @@
 #Convert multipage pdf into a series of tif files
 #Update area between lines before running
+#Written by Randy Wierda
 
 import arcpy
 import os
